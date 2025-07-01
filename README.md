@@ -1,48 +1,50 @@
 # Vivgrid Vercel AI SDK Provider
 
+**[中文文档](README-cn.md) | English**
+
 Vercel AI SDK provider for [vivgrid](https://www.vivgrid.com/) - Global AI Inference Infrastructure platform.
 
-## 安装
+## Installation
 
 ```bash
 npm install @vivgrid/vercel-ai-sdk-provider
-# 或
+# or
 pnpm add @vivgrid/vercel-ai-sdk-provider
-# 或
+# or
 yarn add @vivgrid/vercel-ai-sdk-provider
 ```
 
-## 设置
+## Setup
 
-### 1. 获取 API 密钥
+### 1. Get API Key
 
-从 [vivgrid 控制台](https://www.vivgrid.com/) 获取你的 API 密钥。
+Get your API key from the [vivgrid console](https://www.vivgrid.com/).
 
-### 2. 配置环境变量
+### 2. Configure Environment Variable
 
 ```bash
 export VIVGRID_API_KEY=your-api-key
 ```
 
-## 使用
+## Usage
 
-### 基本文本生成
+### Basic Text Generation
 
-所有模型配置都在 vivgrid 网页控制台中管理，代码中不需要指定模型 ID：
+All model configurations are managed in the vivgrid web console, no need to specify model ID in code:
 
 ```typescript
 import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
 import { generateText } from "ai";
 
 const { text } = await generateText({
-  model: vivgrid(), // 使用网页配置的模型
-  prompt: "写一个蔬菜烤宽面条的食谱（4人份）",
+  model: vivgrid(), // Use the model configured in the web console
+  prompt: "Write a vegetable lasagna recipe for 4 people",
 });
 
 console.log(text);
 ```
 
-### 流式文本生成
+### Streaming Text Generation
 
 ```typescript
 import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
@@ -50,7 +52,7 @@ import { streamText } from "ai";
 
 const { textStream } = await streamText({
   model: vivgrid(),
-  prompt: "给我讲一个关于勇敢小兔子的故事",
+  prompt: "Tell me a story about a brave little rabbit",
 });
 
 for await (const textPart of textStream) {
@@ -58,16 +60,16 @@ for await (const textPart of textStream) {
 }
 ```
 
-### 自定义配置
+### Custom Configuration
 
 ```typescript
 import { createVivgrid } from "@vivgrid/vercel-ai-sdk-provider";
 
 const vivgrid = createVivgrid({
-  apiKey: "your-api-key", // 可选，默认使用 VIVGRID_API_KEY 环境变量
-  baseURL: "https://api.vivgrid.com/v1", // 可选，自定义 API 端点
+  apiKey: "your-api-key", // Optional, defaults to VIVGRID_API_KEY environment variable
+  baseURL: "https://api.vivgrid.com/v1", // Optional, custom API endpoint
   headers: {
-    // 可选，自定义请求头
+    // Optional, custom request headers
     "X-Custom-Header": "value",
   },
 });
@@ -75,7 +77,7 @@ const vivgrid = createVivgrid({
 const model = vivgrid();
 ```
 
-### 对象生成
+### Object Generation
 
 ```typescript
 import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
@@ -96,13 +98,13 @@ const { object } = await generateObject({
       steps: z.array(z.string()),
     }),
   }),
-  prompt: "生成一个意大利面食谱",
+  prompt: "Generate a pasta recipe",
 });
 
 console.log(object.recipe);
 ```
 
-### 工具调用（Tool Calling）
+### Tool Calling
 
 ```typescript
 import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
@@ -110,61 +112,61 @@ import { generateText } from "ai";
 
 const { text, toolCalls } = await generateText({
   model: vivgrid(),
-  prompt: "旧金山的天气如何？",
+  prompt: "What's the weather like in San Francisco?",
   tools: {
     weather: {
-      description: "获取指定地点的天气",
+      description: "Get weather for a specified location",
       parameters: z.object({
-        location: z.string().describe("城市名称"),
+        location: z.string().describe("City name"),
       }),
       execute: async ({ location }) => {
-        // 实际的天气 API 调用
-        return `${location}的天气是晴天，温度 22°C`;
+        // Actual weather API call
+        return `The weather in ${location} is sunny, 22°C`;
       },
     },
   },
 });
 ```
 
-## 模型管理
+## Model Management
 
-所有 AI 模型的选择和配置都在 [vivgrid 控制台](https://www.vivgrid.com/) 中进行管理。你可以在控制台中：
+All AI model selection and configuration is managed in the [vivgrid console](https://www.vivgrid.com/). You can:
 
-- 选择和切换不同的 AI 模型（OpenAI、Anthropic Claude 等）
-- 配置模型参数
-- 管理使用配额
-- 监控使用情况
+- Select and switch between different AI models (OpenAI, Anthropic Claude, etc.)
+- Configure model parameters
+- Manage usage quotas
+- Monitor usage statistics
 
-这种方式让你可以在不修改代码的情况下灵活切换和管理模型。
+This approach allows you to flexibly switch and manage models without modifying your code.
 
-## 特性
+## Features
 
-- ✅ 文本生成
-- ✅ 流式文本生成
-- ✅ 对象生成（结构化输出）
-- ✅ 工具调用
-- ✅ JSON 模式
-- ✅ 兼容 OpenAI API 格式
+- ✅ Text generation
+- ✅ Streaming text generation
+- ✅ Object generation (structured outputs)
+- ✅ Tool calling
+- ✅ JSON mode
+- ✅ OpenAI API compatible
 
-## 高级配置
+## Advanced Configuration
 
-### JSON 模式
-
-```typescript
-const model = vivgrid({
-  jsonMode: true, // 强制模型输出有效的 JSON
-});
-```
-
-### 结构化输出
+### JSON Mode
 
 ```typescript
 const model = vivgrid({
-  structuredOutputs: true, // 启用结构化输出（默认为 true）
+  jsonMode: true, // Force model to output valid JSON
 });
 ```
 
-## 错误处理
+### Structured Outputs
+
+```typescript
+const model = vivgrid({
+  structuredOutputs: true, // Enable structured outputs (default: true)
+});
+```
+
+## Error Handling
 
 ```typescript
 try {
@@ -174,21 +176,21 @@ try {
   });
 } catch (error) {
   if (error instanceof Error) {
-    console.error("错误:", error.message);
+    console.error("Error:", error.message);
   }
 }
 ```
 
-## 贡献
+## Contributing
 
-欢迎提交 issue 和 pull request！
+Issues and pull requests are welcome!
 
-## 许可证
+## License
 
 MIT
 
-## 链接
+## Links
 
-- [vivgrid 官网](https://www.vivgrid.com/)
-- [Vercel AI SDK 文档](https://sdk.vercel.ai/)
-- [GitHub 仓库](https://github.com/vivgrid/vercel-ai-sdk-provider)
+- [vivgrid Website](https://www.vivgrid.com/)
+- [Vercel AI SDK Documentation](https://sdk.vercel.ai/)
+- [GitHub Repository](https://github.com/vivgrid/vercel-ai-sdk-provider)

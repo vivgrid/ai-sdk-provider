@@ -3,95 +3,98 @@ import { z } from "zod";
 import { vivgrid } from "../dist/index.js";
 
 async function main() {
-  // 设置 API 密钥（也可以通过环境变量 VIVGRID_API_KEY 设置）
+  // Set API key (can also be set via environment variable VIVGRID_API_KEY)
   // const vivgridCustom = createVivgrid({ apiKey: 'your-api-key' });
 
-  console.log("=== 基本文本生成示例 ===");
+  console.log("=== Basic Text Generation Example ===");
   try {
     const { text } = await generateText({
-      model: vivgrid(), // 使用网页配置的模型
-      prompt: "用简洁的语言解释什么是人工智能。",
+      model: vivgrid(), // Use the model configured in the web console
+      prompt: "Explain what artificial intelligence is in simple terms.",
     });
-    console.log("生成的文本:", text);
+    console.log("Generated text:", text);
   } catch (error) {
-    console.error("文本生成错误:", error);
+    console.error("Text generation error:", error);
   }
 
-  console.log("\n=== 流式文本生成示例 ===");
+  console.log("\n=== Streaming Text Generation Example ===");
   try {
     const { textStream } = await streamText({
       model: vivgrid(),
-      prompt: "写一个关于勇敢的小猫的短故事（100字左右）。",
+      prompt:
+        "Write a short story about a brave little cat (around 100 words).",
     });
 
-    process.stdout.write("流式输出: ");
+    process.stdout.write("Streaming output: ");
     for await (const textPart of textStream) {
       process.stdout.write(textPart);
     }
     console.log("\n");
   } catch (error) {
-    console.error("流式生成错误:", error);
+    console.error("Streaming generation error:", error);
   }
 
-  console.log("\n=== 对象生成示例 ===");
+  console.log("\n=== Object Generation Example ===");
   try {
     const { object } = await generateObject({
       model: vivgrid(),
       schema: z.object({
-        name: z.string().describe("菜品名称"),
-        ingredients: z.array(z.string()).describe("所需食材"),
-        difficulty: z.enum(["简单", "中等", "困难"]).describe("难度等级"),
-        cookingTime: z.number().describe("烹饪时间（分钟）"),
+        name: z.string().describe("dish name"),
+        ingredients: z.array(z.string()).describe("required ingredients"),
+        difficulty: z
+          .enum(["easy", "medium", "hard"])
+          .describe("difficulty level"),
+        cookingTime: z.number().describe("cooking time in minutes"),
       }),
-      prompt: "生成一个中式家常菜的食谱信息",
+      prompt: "Generate recipe information for a home-style dish",
     });
-    console.log("生成的对象:", JSON.stringify(object, null, 2));
+    console.log("Generated object:", JSON.stringify(object, null, 2));
   } catch (error) {
-    console.error("对象生成错误:", error);
+    console.error("Object generation error:", error);
   }
 
-  console.log("\n=== 工具调用示例 ===");
+  console.log("\n=== Tool Calling Example ===");
   try {
     const { text, toolCalls, toolResults } = await generateText({
       model: vivgrid(),
-      prompt: "帮我计算 123 + 456 的结果",
+      prompt: "Help me calculate the result of 123 + 456",
       tools: {
         calculate: {
-          description: "执行数学计算",
+          description: "Perform mathematical calculations",
           parameters: z.object({
-            expression: z.string().describe("数学表达式"),
+            expression: z.string().describe("mathematical expression"),
           }),
           execute: async ({ expression }) => {
-            // 简单的计算实现 - 仅支持基本的加减乘除
+            // Simple calculation implementation - only supports basic arithmetic
             try {
-              // 移除所有空格并检查是否只包含数字和运算符
+              // Remove all spaces and check if it only contains numbers and operators
               const cleanExpr = expression.replace(/\s/g, "");
               if (!/^[\d+\-*/().]+$/.test(cleanExpr)) {
-                return "计算错误：只支持基本的数学运算";
+                return "Calculation error: Only basic mathematical operations are supported";
               }
 
-              // 使用 Function 构造函数作为更安全的替代
+              // Use Function constructor as a safer alternative
               const result = new Function(`return ${cleanExpr}`)();
-              return `计算结果: ${expression} = ${result}`;
+              return `Calculation result: ${expression} = ${result}`;
             } catch {
-              return "计算错误：无效的表达式";
+              return "Calculation error: Invalid expression";
             }
           },
         },
       },
     });
 
-    console.log("AI 回复:", text);
+    console.log("AI response:", text);
     if (toolCalls && toolCalls.length > 0) {
-      console.log("调用的工具:", toolCalls);
+      console.log("Tools called:", toolCalls);
     }
     if (toolResults && toolResults.length > 0) {
-      console.log("工具结果:", toolResults);
+      console.log("Tool results:", toolResults);
     }
   } catch (error) {
-    console.error("工具调用错误:", error);
+    console.error("Tool calling error:", error);
   }
 }
 
-// 运行示例
+// Run examples
 main().catch(console.error);
