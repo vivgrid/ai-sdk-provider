@@ -1,5 +1,5 @@
 // 模型ID现在完全由网页配置管理，不需要在代码中指定
-export type VivgridChatModelId = undefined;
+export type VivgridChatModelId = undefined
 
 export interface VivgridChatSettings {
   /**
@@ -9,12 +9,12 @@ export interface VivgridChatSettings {
    *
    * 默认值: 无
    */
-  jsonMode?: boolean;
+  jsonMode?: boolean
 
   /**
    * 是否启用结构化输出。
    *
    * 默认值: 无
    */
-  structuredOutputs?: boolean;
+  structuredOutputs?: boolean
 }
