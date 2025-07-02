@@ -7,11 +7,11 @@ Vercel AI SDK provider for [vivgrid](https://www.vivgrid.com/) - Global AI Infer
 ## Installation
 
 ```bash
-npm install vivgrid-ai-provider
+npm install @vivgrid/ai-sdk-provider
 # or
-pnpm add vivgrid-ai-provider
+pnpm add @vivgrid/ai-sdk-provider
 # or
-yarn add vivgrid-ai-provider
+yarn add @vivgrid/ai-sdk-provider
 ```
 
 ## Setup
@@ -33,7 +33,7 @@ export VIVGRID_API_KEY=your-api-key
 All model configurations are managed in the vivgrid web console, no need to specify model ID in code:
 
 ```typescript
-import { vivgrid } from "vivgrid-ai-provider";
+import { vivgrid } from "@vivgrid/ai-sdk-provider";
 import { generateText } from "ai";
 
 const { text } = await generateText({
@@ -47,7 +47,7 @@ console.log(text);
 ### Streaming Text Generation
 
 ```typescript
-import { vivgrid } from "vivgrid-ai-provider";
+import { vivgrid } from "@vivgrid/ai-sdk-provider";
 import { streamText } from "ai";
 
 const { textStream } = await streamText({
@@ -63,7 +63,7 @@ for await (const textPart of textStream) {
 ### Custom Configuration
 
 ```typescript
-import { createVivgrid } from "vivgrid-ai-provider";
+import { createVivgrid } from "@vivgrid/ai-sdk-provider";
 
 const vivgrid = createVivgrid({
   apiKey: "your-api-key", // Optional, defaults to VIVGRID_API_KEY environment variable
@@ -80,7 +80,7 @@ const model = vivgrid();
 ### Object Generation
 
 ```typescript
-import { vivgrid } from "vivgrid-ai-provider";
+import { vivgrid } from "@vivgrid/ai-sdk-provider";
 import { generateObject } from "ai";
 import { z } from "zod";
 
@@ -107,7 +107,7 @@ console.log(object.recipe);
 ### Tool Calling
 
 ```typescript
-import { vivgrid } from "vivgrid-ai-provider";
+import { vivgrid } from "@vivgrid/ai-sdk-provider";
 import { generateText } from "ai";
 
 const { text, toolCalls } = await generateText({
