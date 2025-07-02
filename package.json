@@ -27,6 +27,7 @@
     "format": "biome format --write .",
     "format:check": "biome format .",
     "check": "biome check --write .",
+    "prepare": "husky",
     "changeset": "changeset",
     "changeset:version": "changeset version",
     "changeset:publish": "changeset publish",
@@ -53,6 +54,7 @@
     "@biomejs/biome": "^2.0.6",
     "@changesets/cli": "^2.27.9",
     "@types/node": "24.0.8",
+    "husky": "^9.1.7",
     "tsup": "^8.5.0",
     "tsx": "4.20.3",
     "typescript": "5.8.3"

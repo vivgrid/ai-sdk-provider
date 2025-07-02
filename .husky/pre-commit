@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 运行 Biome 检查（格式化和 lint）
+pnpm run check
+
+# 运行类型检查
+pnpm run type-check
