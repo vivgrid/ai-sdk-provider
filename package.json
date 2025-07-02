@@ -1,6 +1,6 @@
 {
   "name": "vivgrid-ai-provider",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Vercel AI SDK provider for vivgrid AI Bridge platform",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
