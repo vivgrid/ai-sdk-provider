@@ -7,11 +7,11 @@ Vercel AI SDK provider for [vivgrid](https://www.vivgrid.com/) - Global AI Infer
 ## Installation
 
 ```bash
-npm install @vivgrid/vercel-ai-sdk-provider
+npm install vivgrid-ai-provider
 # or
-pnpm add @vivgrid/vercel-ai-sdk-provider
+pnpm add vivgrid-ai-provider
 # or
-yarn add @vivgrid/vercel-ai-sdk-provider
+yarn add vivgrid-ai-provider
 ```
 
 ## Setup
@@ -33,7 +33,7 @@ export VIVGRID_API_KEY=your-api-key
 All model configurations are managed in the vivgrid web console, no need to specify model ID in code:
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { generateText } from "ai";
 
 const { text } = await generateText({
@@ -47,7 +47,7 @@ console.log(text);
 ### Streaming Text Generation
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { streamText } from "ai";
 
 const { textStream } = await streamText({
@@ -63,7 +63,7 @@ for await (const textPart of textStream) {
 ### Custom Configuration
 
 ```typescript
-import { createVivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { createVivgrid } from "vivgrid-ai-provider";
 
 const vivgrid = createVivgrid({
   apiKey: "your-api-key", // Optional, defaults to VIVGRID_API_KEY environment variable
@@ -80,7 +80,7 @@ const model = vivgrid();
 ### Object Generation
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { generateObject } from "ai";
 import { z } from "zod";
 
@@ -107,7 +107,7 @@ console.log(object.recipe);
 ### Tool Calling
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { generateText } from "ai";
 
 const { text, toolCalls } = await generateText({
@@ -193,4 +193,4 @@ MIT
 
 - [vivgrid Website](https://www.vivgrid.com/)
 - [Vercel AI SDK Documentation](https://sdk.vercel.ai/)
-- [GitHub Repository](https://github.com/vivgrid/vercel-ai-sdk-provider)
+- [GitHub Repository](https://github.com/vivgrid/vivgrid-ai-provider)

@@ -76,7 +76,7 @@ gh workflow run release.yml
 curl -X POST \
   -H "Authorization: token YOUR_GITHUB_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
-  https://api.github.com/repos/vivgrid/vercel-ai-sdk-provider/actions/workflows/release.yml/dispatches \
+  https://api.github.com/repos/vivgrid/vivgrid-ai-provider/actions/workflows/release.yml/dispatches \
   -d '{"ref":"main"}'
 ```
 
@@ -128,7 +128,7 @@ curl -X POST \
 
 如果发布出现问题，可以：
 
-1. **npm 回滚**: `npm unpublish @vivgrid/vercel-ai-sdk-provider@版本号`
+1. **npm 回滚**: `npm unpublish vivgrid-ai-provider@版本号`
 2. **Git 回滚**: `git revert 提交哈希`
 3. **删除标签**: `git tag -d v版本号 && git push origin :refs/tags/v版本号`
 

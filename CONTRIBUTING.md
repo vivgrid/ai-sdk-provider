@@ -16,8 +16,8 @@ Thank you for your interest in contributing to the Vivgrid Vercel AI SDK Provide
 1. **Fork and Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-username/vercel-ai-sdk-provider.git
-   cd vercel-ai-sdk-provider
+   git clone https://github.com/your-username/vivgrid-ai-provider.git
+   cd vivgrid-ai-provider
    ```
 
 2. **Install Dependencies**

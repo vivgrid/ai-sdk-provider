@@ -1,5 +1,5 @@
 {
-  "name": "@vivgrid/vercel-ai-sdk-provider",
+  "name": "vivgrid-ai-provider",
   "version": "0.1.0",
   "description": "Vercel AI SDK provider for vivgrid AI Bridge platform",
   "main": "./dist/index.js",
@@ -61,7 +61,7 @@
   "packageManager": "pnpm@10.12.4",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vivgrid/vercel-ai-sdk-provider"
+    "url": "https://github.com/vivgrid/vivgrid-ai-provider"
   },
   "homepage": "https://www.vivgrid.com"
 }

@@ -5,11 +5,11 @@ Vercel AI SDK provider for [vivgrid](https://www.vivgrid.com/) - Global AI Infer
 ## 安装
 
 ```bash
-npm install @vivgrid/vercel-ai-sdk-provider
+npm install vivgrid-ai-provider
 # 或
-pnpm add @vivgrid/vercel-ai-sdk-provider
+pnpm add vivgrid-ai-provider
 # 或
-yarn add @vivgrid/vercel-ai-sdk-provider
+yarn add vivgrid-ai-provider
 ```
 
 ## 设置
@@ -31,7 +31,7 @@ export VIVGRID_API_KEY=your-api-key
 所有模型配置都在 vivgrid 网页控制台中管理，代码中不需要指定模型 ID：
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { generateText } from "ai";
 
 const { text } = await generateText({
@@ -45,7 +45,7 @@ console.log(text);
 ### 流式文本生成
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { streamText } from "ai";
 
 const { textStream } = await streamText({
@@ -61,7 +61,7 @@ for await (const textPart of textStream) {
 ### 自定义配置
 
 ```typescript
-import { createVivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { createVivgrid } from "vivgrid-ai-provider";
 
 const vivgrid = createVivgrid({
   apiKey: "your-api-key", // 可选，默认使用 VIVGRID_API_KEY 环境变量
@@ -78,7 +78,7 @@ const model = vivgrid();
 ### 对象生成
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { generateObject } from "ai";
 import { z } from "zod";
 
@@ -105,7 +105,7 @@ console.log(object.recipe);
 ### 工具调用（Tool Calling）
 
 ```typescript
-import { vivgrid } from "@vivgrid/vercel-ai-sdk-provider";
+import { vivgrid } from "vivgrid-ai-provider";
 import { generateText } from "ai";
 
 const { text, toolCalls } = await generateText({
@@ -191,4 +191,4 @@ MIT
 
 - [vivgrid 官网](https://www.vivgrid.com/)
 - [Vercel AI SDK 文档](https://sdk.vercel.ai/)
-- [GitHub 仓库](https://github.com/vivgrid/vercel-ai-sdk-provider)
+- [GitHub 仓库](https://github.com/vivgrid/vivgrid-ai-provider)
