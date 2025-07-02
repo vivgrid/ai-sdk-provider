@@ -3,8 +3,24 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    paths:
+      - "src/**"
+      - "examples/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "tsconfig.json"
+      - "tsup.config.ts"
+      - "biome.json"
   pull_request:
     branches: [main, develop]
+    paths:
+      - "src/**"
+      - "examples/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "tsconfig.json"
+      - "tsup.config.ts"
+      - "biome.json"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
