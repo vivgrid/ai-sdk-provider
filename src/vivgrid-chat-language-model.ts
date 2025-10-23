@@ -26,6 +26,7 @@ type VivgridChatConfig = {
 export class VivgridChatLanguageModel implements LanguageModelV1 {
   readonly specificationVersion = 'v1'
   readonly defaultObjectGenerationMode = 'json'
+  readonly supportedUrls = {}
 
   readonly modelId: string
   readonly settings: VivgridChatSettings
