@@ -1,20 +1,14 @@
 import {
   type LanguageModelV1,
   type LanguageModelV1CallWarning,
-  type LanguageModelV1FinishReason,
-  type LanguageModelV1StreamPart,
   UnsupportedFunctionalityError,
 } from '@ai-sdk/provider'
-import {
-  createEventSourceResponseHandler,
-  createJsonResponseHandler,
-  type ParseResult,
-  postJsonToApi,
-} from '@ai-sdk/provider-utils'
+import { createJsonResponseHandler, postJsonToApi } from '@ai-sdk/provider-utils'
 import { z } from 'zod'
 import { convertToVivgridChatMessages } from './convert-to-vivgrid-chat-messages'
 import { mapOpenAIFinishReason } from './map-openai-finish-reason'
 import type { VivgridChatModelId, VivgridChatSettings } from './vivgrid-chat-settings'
+import { createVivgridStreamParser } from './vivgrid-stream-parser'
 
 type VivgridChatConfig = {
   provider: string
@@ -193,117 +187,36 @@ export class VivgridChatLanguageModel implements LanguageModelV1 {
   ): Promise<Awaited<ReturnType<LanguageModelV1['doStream']>>> {
     const { args, warnings } = this.getArgs(options)
 
-    const { value: response } = await postJsonToApi({
-      url: `${this.config.baseURL}/chat/completions`,
-      headers: this.config.headers(),
-      body: {
+    const response = await fetch(`${this.config.baseURL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        ...this.config.headers(),
+        'Content-Type': 'application/json',
+        'x-response-format': 'vivgrid',
+      },
+      body: JSON.stringify({
         ...args,
         stream: true,
         stream_options: {
           include_usage: true,
         },
-      },
-      failedResponseHandler: createJsonResponseHandler(vivgridErrorDataSchema) as any,
-      successfulResponseHandler: createEventSourceResponseHandler(vivgridChatStreamChunkSchema),
-      abortSignal: options.abortSignal,
+      }),
+      signal: options.abortSignal,
     })
 
-    let finishReason: LanguageModelV1FinishReason = 'other'
-    let usage: { promptTokens: number; completionTokens: number } = {
-      promptTokens: Number.NaN,
-      completionTokens: Number.NaN,
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(`API request failed: ${JSON.stringify(errorData)}`)
     }
 
-    const toolCalls: Array<{
-      toolCallId: string
-      toolName: string
-      args: string
-    }> = []
+    if (!response.body) {
+      throw new Error('Response body is null')
+    }
+
+    const stream = createVivgridStreamParser(response.body)
 
     return {
-      stream: response.pipeThrough(
-        new TransformStream<
-          ParseResult<z.infer<typeof vivgridChatStreamChunkSchema>>,
-          LanguageModelV1StreamPart
-        >({
-          transform(chunk, controller) {
-            if (!chunk.success) {
-              controller.enqueue({ type: 'error', error: chunk.error })
-              return
-            }
-
-            const value = chunk.value
-
-            if (value.choices?.length > 0) {
-              const choice = value.choices[0]
-
-              if (choice.finish_reason != null) {
-                finishReason = mapOpenAIFinishReason(choice.finish_reason)
-              }
-
-              if (choice.delta?.content != null) {
-                controller.enqueue({
-                  type: 'text-delta',
-                  textDelta: choice.delta.content,
-                })
-              }
-
-              if (choice.delta?.tool_calls != null) {
-                for (const toolCallDelta of choice.delta.tool_calls) {
-                  const index = toolCallDelta.index
-
-                  if (toolCalls[index] == null) {
-                    if (toolCallDelta.type !== 'function') {
-                      throw new UnsupportedFunctionalityError({
-                        functionality: `Tool call type: ${toolCallDelta.type}`,
-                      })
-                    }
-
-                    toolCalls[index] = {
-                      toolCallId: toolCallDelta.id!,
-                      toolName: toolCallDelta.function!.name!,
-                      args: toolCallDelta.function!.arguments!,
-                    }
-
-                    controller.enqueue({
-                      type: 'tool-call-delta',
-                      toolCallType: 'function',
-                      toolCallId: toolCalls[index].toolCallId,
-                      toolName: toolCalls[index].toolName,
-                      argsTextDelta: toolCalls[index].args,
-                    })
-                  } else {
-                    toolCalls[index].args += toolCallDelta.function!.arguments!
-
-                    controller.enqueue({
-                      type: 'tool-call-delta',
-                      toolCallType: 'function',
-                      toolCallId: toolCalls[index].toolCallId,
-                      toolName: toolCalls[index].toolName,
-                      argsTextDelta: toolCallDelta.function!.arguments!,
-                    })
-                  }
-                }
-              }
-            }
-
-            if (value.usage != null) {
-              usage = {
-                promptTokens: value.usage.prompt_tokens || 0,
-                completionTokens: value.usage.completion_tokens || 0,
-              }
-            }
-          },
-
-          flush(controller) {
-            controller.enqueue({
-              type: 'finish',
-              finishReason,
-              usage,
-            })
-          },
-        }),
-      ),
+      stream,
       rawCall: { rawPrompt: args, rawSettings: {} },
       warnings,
     }
@@ -355,40 +268,40 @@ const vivgridChatResponseSchema = z.object({
     .optional(),
 })
 
-const vivgridChatStreamChunkSchema = z.discriminatedUnion('object', [
-  z.object({
-    object: z.literal('chat.completion.chunk'),
-    choices: z.array(
-      z.object({
-        index: z.number(),
-        delta: z.object({
-          role: z.enum(['assistant']).optional(),
-          content: z.string().nullable().optional(),
-          tool_calls: z
-            .array(
-              z.object({
-                index: z.number(),
-                id: z.string().optional(),
-                type: z.literal('function').optional(),
-                function: z
-                  .object({
-                    name: z.string().optional(),
-                    arguments: z.string().optional(),
-                  })
-                  .optional(),
-              }),
-            )
-            .optional(),
-        }),
-        finish_reason: z.string().nullable().optional(),
-      }),
-    ),
-    usage: z
-      .object({
-        prompt_tokens: z.number(),
-        completion_tokens: z.number(),
-        total_tokens: z.number(),
-      })
-      .optional(),
-  }),
-])
+// const vivgridChatStreamChunkSchema = z.discriminatedUnion('object', [
+//   z.object({
+//     object: z.literal('chat.completion.chunk'),
+//     choices: z.array(
+//       z.object({
+//         index: z.number(),
+//         delta: z.object({
+//           role: z.enum(['assistant']).optional(),
+//           content: z.string().nullable().optional(),
+//           tool_calls: z
+//             .array(
+//               z.object({
+//                 index: z.number(),
+//                 id: z.string().optional(),
+//                 type: z.literal('function').optional(),
+//                 function: z
+//                   .object({
+//                     name: z.string().optional(),
+//                     arguments: z.string().optional(),
+//                   })
+//                   .optional(),
+//               }),
+//             )
+//             .optional(),
+//         }),
+//         finish_reason: z.string().nullable().optional(),
+//       }),
+//     ),
+//     usage: z
+//       .object({
+//         prompt_tokens: z.number(),
+//         completion_tokens: z.number(),
+//         total_tokens: z.number(),
+//       })
+//       .optional(),
+//   }),
+// ])
