@@ -71,7 +71,6 @@ function processLine(
   const match = line.match(/^([a-z]):\s*(.+)$/)
   if (!match) return
   const [, prefix, jsonStr] = match
-  console.log(jsonStr)
   try {
     switch (prefix) {
       case 'f': {
